@@ -1,77 +1,118 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Submit Report</title>
   <style>
-    body {
-      font-family: Arial;
-      background: #f0f2f5;
-      padding: 20px;
-    }
-    form {
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-      max-width: 400px;
-      margin: auto;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    input, select {
-      width: 100%;
-      padding: 8px;
-      margin-top: 10px;
-    }
-    button {
-      background: #007bff;
-      color: white;
-      border: none;
-      padding: 10px;
-      margin-top: 10px;
-      width: 100%;
-      border-radius: 5px;
-      cursor: pointer;
-    }
+    body { font-family: Arial; background: #f0f2f5; padding: 20px; }
+    form { background: white; padding: 20px; border-radius: 8px; max-width: 400px; margin: auto; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    input, select, button { width: 100%; padding: 8px; margin-top: 10px; }
+    button { background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
   </style>
 </head>
 <body>
 
-  <form action="https://script.google.com/macros/s/AKfycbz1QbbayBWa92RH6xSg9csfEAi7tpt6Z3fT3k0CYNxMbVMp3E5NqGxZ3h_WoPtN7bLGUw/exec" method="POST">
-    <h2>Submit Report</h2>
-    <input type="text" name="customerName" placeholder="Customer Name" required />
-    <input type="text" name="proflink" placeholder="Prof Link" required />
-    <input type="text" name="location" placeholder="Location" required />
+<form id="reportForm">
+  <h2>Submit Report</h2>
 
-    <label>Friend Req Sent</label>
-    <select name="friendReqSent" required>
-      <option value="">Select</option>
-      <option value="Yes">Yes</option>
-      <option value="No">No</option>
-    </select>
+  <label for="userName">User</label>
+  <select name="userName" id="userName" required>
+    <option value="">Select User</option>
+    <option value="Zhang Shuai">Zhang Shuai</option>
+    <option value="Lao er">Lao er</option>
+    <option value="Hao Hao">Hao Hao</option>
+    <option value="Kai Wan">Kai Wan</option>
+    <option value="Ali">Ali</option>
+    <option value="Danny">Danny</option>
+  </select>
 
-    <label>Friend Rq Acc</label>
-    <select name="friendRqAcc" required>
-      <option value="">Select</option>
-      <option value="Yes">Yes</option>
-      <option value="No">No</option>
-    </select>
+  <label for="modelId">Model ID</label>
+  <select name="modelId" id="modelId" required></select>
 
-    <label>Chat</label>
-    <select name="chat" required>
-      <option value="">Select</option>
-      <option value="Yes">Yes</option>
-      <option value="No">No</option>
-    </select>
+  <input type="text" name="customerName" placeholder="Customer Name" required />
+  <input type="text" name="proflink" placeholder="Prof Link" required />
+  <input type="text" name="location" placeholder="Location" required />
 
-    <label>No Reply</label>
-    <select name="noreply" required>
-      <option value="">Select</option>
-      <option value="Yes">Yes</option>
-      <option value="No">No</option>
-    </select>
+  <label for="friendReqSent">Friend Req Sent</label>
+  <select name="friendReqSent" required>
+    <option value="">Select</option>
+    <option value="Yes">Yes</option>
+    <option value="No">No</option>
+  </select>
 
-    <button type="submit">Submit</button>
-  </form>
+  <label for="friendRqAcc">Friend Rq Acc</label>
+  <select name="friendRqAcc" required>
+    <option value="">Select</option>
+    <option value="Yes">Yes</option>
+    <option value="No">No</option>
+  </select>
+
+  <label for="chat">Chat</label>
+  <select name="chat" required>
+    <option value="">Select</option>
+    <option value="Yes">Yes</option>
+    <option value="No">No</option>
+  </select>
+
+  <label for="noreply">No Reply</label>
+  <select name="noreply" required>
+    <option value="">Select</option>
+    <option value="Yes">Yes</option>
+    <option value="No">No</option>
+  </select>
+
+  <button type="submit">Submit</button>
+  <p id="response" style="color:green;"></p>
+</form>
+
+<script>
+  const modelMap = {
+    "Zhang Shuai": ["ZS01", "ZS02", "ZS03"],
+    "Lao er": ["LE01", "LE02"],
+    "Hao Hao": ["HH01", "HH02", "HH03"],
+    "Kai Wan": ["KW01"],
+    "Ali": ["A01", "A02", "A03"],
+    "Danny": ["D01", "D02"]
+  };
+
+  const userSelect = document.getElementById("userName");
+  const modelSelect = document.getElementById("modelId");
+
+  userSelect.addEventListener("change", () => {
+    const selectedUser = userSelect.value;
+    modelSelect.innerHTML = '<option value="">Select Model ID</option>';
+    if (modelMap[selectedUser]) {
+      modelMap[selectedUser].forEach(id => {
+        const opt = document.createElement("option");
+        opt.value = id;
+        opt.textContent = id;
+        modelSelect.appendChild(opt);
+      });
+    }
+  });
+
+  document.getElementById("reportForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    const form = e.target;
+    const formData = new FormData(form);
+
+    fetch("YOUR_WEB_APP_URL", {
+      method: "POST",
+      body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById("response").innerText = "Submitted successfully!";
+      form.reset();
+      modelSelect.innerHTML = ''; // clear model ID options
+    })
+    .catch(err => {
+      console.error("Error:", err);
+      document.getElementById("response").innerText = "Failed to submit.";
+    });
+  });
+</script>
 
 </body>
 </html>
