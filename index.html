@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Submit Report</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #f0f2f5;
+      padding: 20px;
+    }
+    form {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      max-width: 400px;
+      margin: auto;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    input, select {
+      width: 100%;
+      padding: 8px;
+      margin-top: 10px;
+    }
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 10px;
+      margin-top: 10px;
+      width: 100%;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <form id="reportForm">
+    <h2>Submit Report</h2>
+    <input type="text" name="customerName" placeholder="Customer Name" required />
+    <input type="text" name="proflink" placeholder="Prof Link" required />
+    <input type="text" name="location" placeholder="Location" required />
+
+    <label>Friend Req Sent</label>
+    <select name="friendReqSent" required>
+      <option value="">Select</option>
+      <option value="Yes">Yes</option>
+      <option value="No">No</option>
+    </select>
+
+    <label>Friend Rq Acc</label>
+    <select name="friendRqAcc" required>
+      <option value="">Select</option>
+      <option value="Yes">Yes</option>
+      <option value="No">No</option>
+    </select>
+
+    <label>Chat</label>
+    <select name="chat" required>
+      <option value="">Select</option>
+      <option value="Yes">Yes</option>
+      <option value="No">No</option>
+    </select>
+
+    <label>No Reply</label>
+    <select name="noreply" required>
+      <option value="">Select</option>
+      <option value="Yes">Yes</option>
+      <option value="No">No</option>
+    </select>
+
+    <button type="submit">Submit</button>
+    <p id="response" style="color:green;"></p>
+  </form>
+
+  <script>
+    document.getElementById("reportForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      const form = e.target;
+      const formData = new URLSearchParams();
+      formData.append("customerName", form.customerName.value);
+      formData.append("proflink", form.proflink.value);
+      formData.append("location", form.location.value);
+      formData.append("friendReqSent", form.friendReqSent.value);
+      formData.append("friendRqAcc", form.friendRqAcc.value);
+      formData.append("chat", form.chat.value);
+      formData.append("noreply", form.noreply.value);
+
+      fetch("https://script.google.com/macros/s/AKfycbwPm2a1gy3o7xYb1Pc1FY_CEs0QJpdiHiZg6i4MRBb5-rps-dGJcOCRUUggqMUvvfeQOg/exec", {
+        method: "POST",
+        body: formData
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.result === "success") {
+          document.getElementById("response").innerText = "Submitted successfully!";
+          form.reset();
+        } else {
+          document.getElementById("response").innerText = "Submission failed.";
+        }
+      })
+      .catch(err => {
+        console.error("Error:", err);
+        document.getElementById("response").innerText = "Failed to submit.";
+      });
+    });
+  </script>
+
+</body>
+</html>
