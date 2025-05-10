@@ -100,22 +100,35 @@
     const form = e.target;
     const formData = new FormData(form);
 
+    // ✅ Log all form data to console for debugging
+    console.log("Form data being submitted:");
+    for (let [key, value] of formData.entries()) {
+      console.log(`${key}: ${value}`);
+    }
+
     fetch("https://script.google.com/macros/s/AKfycbz1QbbayBWa92RH6xSg9csfEAi7tpt6Z3fT3k0CYNxMbVMp3E5NqGxZ3h_WoPtN7bLGUw/exec", {
       method: "POST",
       body: formData
     })
-    .then(res => res.json())
+    .then(res => {
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      return res.json();
+    })
     .then(data => {
+      console.log("Response from server:", data);
       document.getElementById("response").innerText = "Submitted successfully!";
       form.reset();
       modelSelect.innerHTML = ''; // clear model ID options
     })
     .catch(err => {
-      console.error("Error:", err);
+      console.error("Error during fetch:", err);
       document.getElementById("response").innerText = "Failed to submit.";
     });
   });
 </script>
+
 
 </body>
 </html>
